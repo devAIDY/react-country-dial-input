@@ -1,0 +1,60 @@
+{
+  "name": "react-country-dial-input",
+  "version": "1.0.0",
+  "description": "React telephone input with a searchable country dial-code picker, flags, per-country formatting and a floating label.",
+  "license": "MIT",
+  "author": "Ankit Yadav",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./style.css": "./dist/style.css",
+    "./countries.json": "./dist/countries.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node scripts/copy-assets.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm test && npm run build"
+  },
+  "keywords": [
+    "react",
+    "phone",
+    "telephone",
+    "input",
+    "country",
+    "dial-code",
+    "flag",
+    "phone-input"
+  ],
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "dependencies": {
+    "flag-icons": "^7.6.0",
+    "phone": "^3.1.74",
+    "react-number-format": "^5.4.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.3.0",
+    "jsdom": "^31.0.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.1"
+  }
+}
