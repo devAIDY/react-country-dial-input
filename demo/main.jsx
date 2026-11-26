@@ -49,7 +49,7 @@ function ToggleControl({ label, checked, onChange }) {
 }
 
 function Demo() {
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState("2025550123");
   const [country, setCountry] = useState("US");
   const [countryDialCode, setCountryDialCode] = useState("+1");
   const [validation, setValidation] = useState(null);
@@ -98,7 +98,7 @@ function Demo() {
   };
 
   const reset = () => {
-    setPhone("");
+    setPhone("2025550123");
     setCountry("US");
     setCountryDialCode("+1");
     setValidation(null);
@@ -110,7 +110,7 @@ function Demo() {
     <div className="demo-shell">
       <header className="demo-header">
         <a className="demo-brand" href="https://github.com/devAIDY" target="_blank" rel="noreferrer">
-          <img className="demo-avatar" src="https://github.com/devAIDY.png?size=80" alt="" />
+          <span className="demo-avatar" aria-hidden="true">DA</span>
           <span>devAIDY<span className="demo-brand-dot">/</span></span>
         </a>
         <span className="demo-header-note">react-country-dial-input</span>

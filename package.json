@@ -1,6 +1,6 @@
 {
   "name": "react-country-dial-input",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React telephone input with a searchable country dial-code picker, flags, per-country formatting and a floating label.",
   "license": "MIT",
   "author": "Ankit Yadav",
