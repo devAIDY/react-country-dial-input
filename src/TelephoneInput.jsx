@@ -44,15 +44,15 @@ const TelephoneInput = ({
   placeholder = "_",
   searchPlaceholder = "Search Country",
   autoComplete = "tel-national",
+  format,
   likePassword = false,
   formDisabled = false,
   unformatted,
-  forAgent = false,
   ...inputRest
 }) => {
   const autoId = useId();
   const id = idProp ?? (name ? `telephone_input_id_${name}` : autoId);
-  const plainInput = unformatted ?? forAgent;
+  const plainInput = unformatted;
 
   const addOnRef = useRef(null);
   const parentRef = useRef(null);
@@ -314,7 +314,7 @@ const TelephoneInput = ({
           ) : (
             <PatternFormat
               {...inputProps}
-              format={getPhoneFormat(currentCountry)}
+              format={format ?? getPhoneFormat(currentCountry)}
               onValueChange={changeHandler}
             />
           )}

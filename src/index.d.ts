@@ -72,6 +72,8 @@ export interface TelephoneInputProps extends NativeInputProps {
   countryCode?: string;
   /** Replace the built-in country list. */
   countries?: Country[];
+  /** Override the country-based mask, e.g. "(###) ###-####". Ignored with `unformatted`. */
+  format?: string;
 
   /** Force the valid state. Setting `isValid` or `isInvalid` overrides `autoValidate`. */
   isValid?: boolean;
@@ -114,10 +116,8 @@ export interface TelephoneInputProps extends NativeInputProps {
   required?: boolean;
   /** Keeps the field read-only until focused, to stop browser autofill. */
   disableAutoFill?: boolean;
-  /** Plain digits-only input without the "### ### ####" mask. */
+  /** Plain digits-only input without a mask (also disables a custom `format`). */
   unformatted?: boolean;
-  /** @deprecated Use `unformatted`. */
-  forAgent?: boolean;
 
   /** Class on the outer container. */
   className?: string;

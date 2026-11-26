@@ -1,15 +1,31 @@
 # react-country-dial-input
 
-React telephone input with a searchable country dial-code picker.
+A polished telephone input for React with searchable countries, dial codes, adaptive number formatting, and built-in validation.
 
-- 243 countries with flags (via [`flag-icons`](https://www.npmjs.com/package/flag-icons))
-- Number mask sized to each country's length (`### ### ####`)
-- Search by country name, ISO code (`uk` works) or dial code (`+91`)
-- Built-in validation with the [`phone`](https://www.npmjs.com/package/phone) library
-- Floating label, valid/invalid states with an error bubble
-- Autofill clean-up: `+1 (555) 123-4567` becomes `5551234567`
-- Optional masked ("like password") mode, edit link, custom right-side addon
-- No UI framework needed; theme it with CSS variables
+![React](https://img.shields.io/badge/React-18%2B-149eca?logo=react&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-087e72)
+
+## Try the demo
+
+The interactive playground shows country selection, live validation, the national number value, and its E.164 result. Use the props panel to change component options, inspect the props object, and see callback events. It also includes custom format, masked, and disabled examples.
+
+```bash
+git clone https://github.com/devAIDY/react-country-dial-input.git
+cd react-country-dial-input
+npm install
+npm run dev
+```
+
+Open the local URL printed by Vite, usually `http://localhost:5173/`.
+
+## Features
+
+- Search 243 countries by name, ISO code, or dial code, with flags.
+- Format numbers according to the selected country's length, or provide a custom mask.
+- Validate numbers and receive their E.164 representation.
+- Support floating labels, masked input, disabled states, and custom addons.
+- Theme the component with CSS variables; no UI framework required.
+- Clean pasted numbers such as `+1 (555) 123-4567` into national digits.
 
 ## Install
 
@@ -17,19 +33,16 @@ React telephone input with a searchable country dial-code picker.
 npm install react-country-dial-input
 ```
 
-Requires React 18 or newer. `flag-icons`, `phone` and `react-number-format` are installed with it.
+Requires React 18 or newer. `flag-icons`, `phone`, and `react-number-format` are installed with the package.
 
-## Usage
+## Quick start
 
-Import both stylesheets once, for example in your app entry:
-
-```js
-import "flag-icons/css/flag-icons.min.css";
-import "react-country-dial-input/style.css";
-```
+Import the component styles and flag styles once in your app entry:
 
 ```jsx
 import { useState } from "react";
+import "flag-icons/css/flag-icons.min.css";
+import "react-country-dial-input/style.css";
 import TelephoneInput from "react-country-dial-input";
 
 export default function PhoneField() {
@@ -42,104 +55,125 @@ export default function PhoneField() {
       name="phone"
       value={phone}
       countryCode={country}
-      onChange={(e) => setPhone(e.target.value)} // digits only, no dial code
-      onCountryChange={(code, country) => setCountry(code)} // "IN", {country, dial_code, ...}
+      onChange={(event) => setPhone(event.target.value)}
+      onCountryChange={(code) => setCountry(code)}
     />
   );
 }
 ```
 
-Like a native input, the field is controlled: pass `value` and `countryCode`, and update them in `onChange` and `onCountryChange`.
+The input is controlled. `onChange` provides national digits without the dial code. `countryCode` is the selected ISO alpha-2 country code, such as `US` or `IN`.
+
+By default, the mask adapts to the selected country. Pass `format` to provide your own mask using `#` for each digit:
+
+```jsx
+<TelephoneInput
+  label="US phone number"
+  countryCode="US"
+  value={phone}
+  onChange={(event) => setPhone(event.target.value)}
+  format="(###) ###-####"
+/>
+```
+
+The custom mask controls the displayed formatting; `onChange` still returns digits only. `unformatted` disables both the built-in and custom masks.
 
 ## Validation
 
-Turn on `autoValidate` and the field validates itself: it turns green as soon as the number is valid, and red with an error bubble once the user leaves it with an invalid number. Use `onValidate` to get the result into your form state:
+Set `autoValidate` to validate as the user types. `onValidate` provides the validity and E.164 number for your form state:
 
 ```jsx
 <TelephoneInput
   name="phone"
   value={phone}
   countryCode={country}
-  onChange={(e) => setPhone(e.target.value)}
+  onChange={(event) => setPhone(event.target.value)}
   onCountryChange={setCountry}
   autoValidate
-  validateText="Please enter a valid mobile number" // optional, this is the default
   onValidate={(isValid, info) => {
     setPhoneValid(isValid);
-    // info.phoneNumber -> "+919876543210" (E.164), null when invalid
+    // info.phoneNumber is E.164, for example "+919876543210".
+    // It is null when the number is invalid.
   }}
 />
 ```
 
-`onValidate` fires whenever validity changes, including when the country changes. It works without `autoValidate` too, if you want the result but prefer to show the states yourself with `isValid` / `isInvalid`. If you pass `isValid` or `isInvalid`, they always win over `autoValidate`.
+`onValidate` also works without `autoValidate` if you want to manage the visual state yourself with `isValid` or `isInvalid`. Explicit `isValid` and `isInvalid` props take precedence over `autoValidate`.
 
-You can also validate outside the component, for example on submit or on the server:
+You can validate outside the component too:
 
 ```js
 import { validatePhone, getPhoneInfo } from "react-country-dial-input";
 
 validatePhone("9876543210", "IN"); // true
-validatePhone("07400123456", "GB"); // false: drop the trunk 0
-getPhoneInfo("2025550123", "us");
-// { isValid: true, phoneNumber: "+12025550123", countryIso2: "US", countryIso3: "USA", countryCode: "+1" }
+validatePhone("07400123456", "GB"); // false: omit the domestic trunk prefix
+
+getPhoneInfo("2025550123", "US");
+// { isValid: true, phoneNumber: "+12025550123", countryIso2: "US",
+//   countryIso3: "USA", countryCode: "+1" }
 ```
 
-The checks run on the `phone` library's per-country rules (length and valid prefixes). On top of that:
-
-- **Territories without their own data validate as their parent country:** Jersey, Guernsey and the Isle of Man as UK; Christmas and Cocos Islands as Australia; St Barthélemy and St Martin as Guadeloupe; Vatican City as Italy.
-- **A leading `0` (domestic trunk prefix) is rejected:** the exceptions are Congo, Ivory Coast and Benin, where numbers really start with 0.
+Validation uses the `phone` library's country rules for number length and valid prefixes. A leading domestic `0` is rejected except for Congo, Ivory Coast, and Benin, where numbers start with `0`. Jersey, Guernsey, and the Isle of Man use UK rules; Christmas and Cocos Islands use Australian rules; Saint Barthélemy and Saint Martin use Guadeloupe rules; Vatican City uses Italian rules.
 
 ## Props
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `label` | node | | Floating label |
-| `value` | string | | National number, digits only |
-| `name` | string | | Input name; also passed back in `onChange` |
-| `id` | string | `telephone_input_id_${name}` | Input id |
-| `countryCode` | string | `"us"` | ISO alpha-2 code of the selected country, case-insensitive, `"uk"` = `"gb"` |
-| `countries` | `Country[]` | built-in list | Replace or filter the country list |
-| `onChange` | `(e) => void` | | `e.target = { name, value }`, value is digits only |
-| `onCountryChange` | `(code, country) => void` | | Upper-case ISO code and the country object |
-| `onFocus` / `onBlur` / `onPaste` | function | | Native input events |
-| `autoValidate` | boolean | `false` | Validate with `phone` and show the states automatically |
-| `onValidate` | `(isValid, info) => void` | | Called when validity changes; `info.phoneNumber` is the E.164 number |
-| `isValid` / `isInvalid` | boolean | | Force the green/red state (overrides `autoValidate`) |
-| `validateText` | node | `"Please enter a valid phone number"` with `autoValidate` | Error bubble shown above the field when invalid |
-| `hideIcons` | boolean | `false` | Hide the valid/invalid icons |
-| `editField` | `{ label, callBack }` | | Shows a pencil "edit" link on the right |
-| `addon` | node | | Extra content at the right edge of the field |
-| `likePassword` | boolean | `false` | Mask the digits as dots, with a show/hide toggle |
-| `disabled` | boolean | `false` | Disable the input and the country picker |
-| `formDisabled` | boolean | `false` | Disable it and paint a disabled overlay |
-| `readOnly` | boolean | `false` | Read-only input; the country picker is locked too |
-| `required` | boolean | `false` | |
-| `disableAutoFill` | boolean | `false` | Keep the field read-only until focused, to block browser autofill |
-| `unformatted` | boolean | `false` | Plain digits input without the mask (capped at the country's length) |
-| `className` | string | | Class on the outer container |
-| `placeholder` | string | `"_"` | Must not be empty: the floating label relies on `:placeholder-shown` |
-| `searchPlaceholder` | string | `"Search Country"` | |
-| `autoComplete` | string | `"tel-national"` | |
+| `label` | `node` | — | Floating label. |
+| `value` | `string` | `""` | National number, digits only. |
+| `name` | `string` | — | Input name, included in the `onChange` event target. |
+| `id` | `string` | `telephone_input_id_${name}` | Input id. |
+| `countryCode` | `string` | `"us"` | ISO alpha-2 country code; case-insensitive, and `"uk"` maps to `"gb"`. |
+| `countries` | `Country[]` | Built-in list | Replace or filter the country list. |
+| `format` | `string` | Country-based mask | Custom number mask, for example `"(###) ###-####"`; ignored when `unformatted` is enabled. |
+| `onChange` | `(event) => void` | — | Receives an event-like object with `target: { name, value }`; value is digits only. |
+| `onCountryChange` | `(code, country) => void` | — | Receives the upper-case ISO code and selected country object. |
+| `onFocus` / `onBlur` / `onPaste` | `function` | — | Native input event handlers. |
+| `autoValidate` | `boolean` | `false` | Validate and show valid or invalid states automatically. |
+| `onValidate` | `(isValid, info) => void` | — | Called when validity changes; `info.phoneNumber` is the E.164 number or `null`. |
+| `isValid` / `isInvalid` | `boolean` | — | Force a visual state; takes precedence over `autoValidate`. |
+| `validateText` | `node` | Default validation message | Message shown when invalid. |
+| `hideIcons` | `boolean` | `false` | Hide valid and invalid icons. |
+| `editField` | `{ label, callBack }` | — | Show an edit link. |
+| `addon` | `node` | — | Extra content at the right edge of the field. |
+| `likePassword` | `boolean` | `false` | Mask the number and show a visibility toggle. |
+| `disabled` | `boolean` | `false` | Disable the input and country picker. |
+| `formDisabled` | `boolean` | `false` | Disable the input and show a disabled overlay. |
+| `readOnly` | `boolean` | `false` | Make the field read-only and lock the country picker. |
+| `required` | `boolean` | `false` | Mark the input as required. |
+| `disableAutoFill` | `boolean` | `false` | Keep the field read-only until focused to prevent browser autofill. |
+| `unformatted` | `boolean` | `false` | Show plain digits, capped at the selected country's number length; disables `format`. |
+| `className` | `string` | — | Class on the outer container. |
+| `placeholder` | `string` | `"_"` | Placeholder; must not be empty because the floating label relies on `:placeholder-shown`. |
+| `searchPlaceholder` | `string` | `"Search Country"` | Country search placeholder. |
+| `autoComplete` | `string` | `"tel-national"` | Native autocomplete value. |
 
-Any other props (`data-*`, `aria-*`, `style`, …) are passed to the `<input>`.
+Other input props, including `data-*`, `aria-*`, and `style`, are passed through to the input.
 
 ## Helpers
 
 ```js
 import {
-  countries, // Country[]: { country, country_code, dial_code, ph_length, alpha_3, iso_code }
-  findCountry, // findCountry(countries, "uk") -> United Kingdom
-  getPhoneFormat, // getPhoneFormat(country) -> "### ### ####"
-  filterCountries, // the dropdown's search: filterCountries(countries, "+44")
-  normalizeCountryCode, // "UK" -> "gb"
-  validatePhone, // validatePhone("9876543210", "IN") -> true
-  getPhoneInfo, // same, with the E.164 number and ISO codes
+  countries,
+  findCountry,
+  filterCountries,
+  getPhoneFormat,
+  normalizeCountryCode,
+  validatePhone,
+  getPhoneInfo,
 } from "react-country-dial-input";
+
+findCountry(countries, "uk"); // United Kingdom
+filterCountries(countries, "+44");
+getPhoneFormat(findCountry(countries, "US")); // e.g. "### ### ####"
+normalizeCountryCode("UK"); // "gb"
 ```
+
+Country objects contain `country`, `country_code`, `dial_code`, `ph_length`, `alpha_3`, and `iso_code` fields.
 
 ## Theming
 
-All styles are scoped under `.rcdi`. Override these on `:root` or a parent element:
+Styles are scoped under `.rcdi`. Set these CSS custom properties on `:root` or a parent element:
 
 ```css
 :root {
@@ -162,9 +196,9 @@ All styles are scoped under `.rcdi`. Override these on `:root` or a parent eleme
 
 ```bash
 npm install
-npm run dev     # playground at demo/
-npm test
-npm run build   # dist/: index.js (ESM), index.cjs, index.d.ts, style.css
+npm run dev       # Start the demo playground
+npm test          # Run the test suite
+npm run build     # Build the package into dist/
 ```
 
 ## License
