@@ -201,9 +201,12 @@ Styles are scoped under `.rcdi`. Set these CSS custom properties on `:root` or a
 ```bash
 npm install
 npm run dev       # Start the demo playground
+npm run build:demo # Build the demo for static hosting
 npm test          # Run the test suite
 npm run build     # Build the package into dist/
 ```
+
+The repository includes a GitHub Actions workflow that deploys the demo to GitHub Pages when changes are pushed to `main`. In the repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**. The site is served at `https://devAIDY.github.io/react-country-dial-input/` after the first successful deployment.
 
 ## License
 
