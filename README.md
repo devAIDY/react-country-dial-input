@@ -7,9 +7,11 @@ A polished telephone input for React with searchable countries, dial codes, adap
 
 ## Preview
 
-![react-country-dial-input demo showing the phone field and interactive props playground](https://raw.githubusercontent.com/devAIDY/react-country-dial-input/main/demo/demo-preview.png)
+![Telephone input field with a selected country, formatted number, and valid state](https://raw.githubusercontent.com/devAIDY/react-country-dial-input/main/demo/demo-preview.png)
 
 ## Try the demo
+
+**[Open the live demo](https://devaidy.github.io/react-country-dial-input/)**
 
 The interactive playground shows country selection, live validation, the national number value, and its E.164 result. Use the props panel to change component options, inspect the props object, and see callback events. It also includes custom format, masked, and disabled examples.
 
